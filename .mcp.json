@@ -1,0 +1,12 @@
+{
+  "mcpServers": {
+    "gradle-mcp": {
+      "type": "stdio",
+      "command": "jbang",
+      "args": ["run", "--quiet", "--fresh", "gradle-mcp@rnett"],
+      "env": {
+        "GRADLE_MCP_PROJECT_ROOT": "/Users/svetlana.isakova/Projects/koog-projects/koog-graph-checker"
+      }
+    }
+  }
+}

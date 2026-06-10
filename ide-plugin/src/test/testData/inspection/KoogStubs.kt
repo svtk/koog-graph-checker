@@ -16,7 +16,7 @@ fun <IncomingOutput, CompatibleOutput : OutgoingInput, OutgoingInput>
 
 fun <Input, Output> node(block: (Input) -> Output): AIAgentNode<Input, Output> = TODO()
 
-fun <IncomingOutput, OldIntermediate, NewIntermediate, OutgoingInput>
+infix fun <IncomingOutput, OldIntermediate, NewIntermediate, OutgoingInput>
     AIAgentEdgeBuilderIntermediate<IncomingOutput, OldIntermediate, OutgoingInput>.transformed(
     block: (OldIntermediate) -> NewIntermediate,
 ): AIAgentEdgeBuilderIntermediate<IncomingOutput, NewIntermediate, OutgoingInput> = TODO()

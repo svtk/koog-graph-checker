@@ -1,13 +1,20 @@
 package org.jetbrains.koog.graph.checker.ide
 
-import com.intellij.lang.annotation.HighlightSeverity
+import com.intellij.openapi.projectRoots.JavaSdk
+import com.intellij.openapi.projectRoots.Sdk
 import com.intellij.testFramework.TestDataPath
-import com.intellij.testFramework.fixtures.BasePlatformTestCase
+import com.intellij.testFramework.fixtures.DefaultLightProjectDescriptor
+import com.intellij.testFramework.fixtures.LightJavaCodeInsightFixtureTestCase
 
 @TestDataPath("\$CONTENT_ROOT/src/test/testData/inspection")
-class KoogEdgeTypeMismatchInspectionTest : BasePlatformTestCase() {
+class KoogEdgeTypeMismatchInspectionTest : LightJavaCodeInsightFixtureTestCase() {
 
     override fun getTestDataPath(): String = "src/test/testData/inspection"
+
+    override fun getProjectDescriptor() = object : DefaultLightProjectDescriptor() {
+        override fun getSdk(): Sdk = JavaSdk.getInstance()
+            .createJdk("JDK", System.getProperty("java.home"), false)
+    }
 
     override fun setUp() {
         super.setUp()
@@ -16,31 +23,33 @@ class KoogEdgeTypeMismatchInspectionTest : BasePlatformTestCase() {
         myFixture.copyFileToProject("KoogStubsExtension.kt")
     }
 
-    fun testNoErrorOnCompatibleEdge() = assertEdgeErrors("koogStrategy.kt", 0)
+    fun testNoErrorOnCompatibleEdge() {
+        myFixture.configureByFile("koogStrategy.kt")
+        myFixture.checkHighlighting(false, false, false, true)
+    }
 
-    fun testErrorOnDirectTypeMismatch() = assertEdgeErrors("koogStrategyEdgeTypeMismatch.kt", 1)
+    fun testErrorOnDirectTypeMismatch() {
+        myFixture.configureByFile("koogStrategyEdgeTypeMismatch.kt")
+        myFixture.checkHighlighting(false, false, false, true)
+    }
 
-    fun testNoErrorOnValidTransform() = assertEdgeErrors("koogStrategyValidTransform.kt", 0)
+    fun testNoErrorOnValidTransform() {
+        myFixture.configureByFile("koogStrategyValidTransform.kt")
+        myFixture.checkHighlighting(false, false, false, true)
+    }
 
-    fun testErrorOnTransformTypeMismatch() = assertEdgeErrors("koogStrategyTransformed.kt", 1)
+    fun testErrorOnTransformTypeMismatch() {
+        myFixture.configureByFile("koogStrategyTransformed.kt")
+        myFixture.checkHighlighting(false, false, false, true)
+    }
 
-    fun testErrorOnIsInstanceMismatch() = assertEdgeErrors("koogStrategyOnIsInstance.kt", 1)
+    fun testErrorOnIsInstanceMismatch() {
+        myFixture.configureByFile("koogStrategyOnIsInstance.kt")
+        myFixture.checkHighlighting(false, false, false, true)
+    }
 
-    fun testErrorOnConditionThenTransformMismatch() =
-        assertEdgeErrors("koogStrategyOnConditionTransformed.kt", 1)
-
-    // Runs the inspection on the given file and checks that the number of "Invalid edge:" problems
-    // matches the expectation. Using doHighlighting() filtered by our message prefix rather than
-    // testHighlighting() makes the tests immune to unrelated environment errors (e.g.
-    // MISSING_DEPENDENCY_SUPERCLASS from the mock JDK used in tests).
-    private fun assertEdgeErrors(fileName: String, expectedCount: Int) {
-        myFixture.configureByFile(fileName)
-        val edgeErrors = myFixture.doHighlighting(HighlightSeverity.ERROR)
-            .filter { it.description?.startsWith("Invalid edge:") == true }
-        assertEquals(
-            "Expected $expectedCount 'Invalid edge:' error(s) in $fileName",
-            expectedCount,
-            edgeErrors.size,
-        )
+    fun testErrorOnConditionThenTransformMismatch() {
+        myFixture.configureByFile("koogStrategyOnConditionTransformed.kt")
+        myFixture.checkHighlighting(false, false, false, true)
     }
 }

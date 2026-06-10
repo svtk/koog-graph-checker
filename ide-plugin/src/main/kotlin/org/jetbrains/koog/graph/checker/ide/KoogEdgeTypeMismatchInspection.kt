@@ -3,6 +3,7 @@
 package org.jetbrains.koog.graph.checker.ide
 
 import com.intellij.codeInspection.LocalInspectionTool
+import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.codeInspection.ProblemsHolder
 import com.intellij.psi.PsiElementVisitor
 import org.jetbrains.kotlin.analysis.api.KaExperimentalApi
@@ -64,6 +65,7 @@ class KoogEdgeTypeMismatchInspection : LocalInspectionTool() {
                     holder.registerProblem(
                         expression.calleeExpression ?: expression,
                         message,
+                        ProblemHighlightType.GENERIC_ERROR,
                     )
                 }
             }

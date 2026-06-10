@@ -1,0 +1,19 @@
+<!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
+<idea-plugin>
+    <id>com.github.svtk.kooggraphcheckeride</id>
+    <name>koog-graph-checker-ide</name>
+    <vendor>svtk</vendor>
+    <description><![CDATA[
+        <p><b>koog-graph-checker-ide</b> is a repository that provides a pure template to make it easier to create a new plugin project.</p>
+        <p>The main goal of this template is to speed up the setup phase of plugin development for both new and experienced developers by preconfiguring the project scaffold and CI, linking to the proper documentation pages, and keeping everything organized.</p>
+    ]]></description>
+
+    <depends>com.intellij.modules.platform</depends>
+
+    <resource-bundle>messages.MyBundle</resource-bundle>
+
+    <extensions defaultExtensionNs="com.intellij">
+        <toolWindow factoryClass="com.github.svtk.kooggraphcheckeride.toolWindow.MyToolWindowFactory" id="MyToolWindow"/>
+        <postStartupActivity implementation="com.github.svtk.kooggraphcheckeride.startup.MyProjectActivity" />
+    </extensions>
+</idea-plugin>

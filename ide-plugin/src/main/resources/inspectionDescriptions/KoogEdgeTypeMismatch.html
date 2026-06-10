@@ -1,0 +1,20 @@
+<html>
+<body>
+<p>
+    Reports when two nodes in a Koog strategy graph are connected by an edge whose types don't line up.
+</p>
+<p>
+    When such a mismatch occurs, the Kotlin compiler produces a generic type error involving deeply nested
+    generic signatures that are hard to read. This inspection surfaces the same problem with a focused,
+    domain-level message:
+</p>
+<pre><code>
+Invalid edge: the edge's output type Int does not match the target node's input type String.
+</code></pre>
+<!-- tooltip end -->
+<p>
+    The check covers direct edges, edges with transforms (<code>transformed</code>, <code>onIsInstance</code>,
+    and any user-defined extensions), and chains that mix type-neutral operators with type-changing ones.
+</p>
+</body>
+</html>

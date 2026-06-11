@@ -1,8 +1,11 @@
-import ai.koog.agents.core.dsl.builder.*
+import ai.koog.agents.core.dsl.builder.node
+import ai.koog.agents.core.dsl.builder.strategy
 
-val source = node<String, Int> { input -> input.length }
-val target = node<String, String> { input -> input }
+val strategy = strategy<String, String>("test") {
+    val source by node<String, Int> { input -> input.length }
+    val target by node<String, String> { input -> input }
 
-fun test() {
+    edge(nodeStart forwardTo source)
     <error descr="Invalid edge: the edge's output type Long does not match the target node's input type String.">edge</error>(source forwardTo target transformed { it.toLong() })
+    edge(target forwardTo nodeFinish)
 }

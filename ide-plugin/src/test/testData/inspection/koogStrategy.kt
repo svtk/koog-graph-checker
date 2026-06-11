@@ -1,9 +1,12 @@
 // No errors: edge types are compatible.
-import ai.koog.agents.core.dsl.builder.*
+import ai.koog.agents.core.dsl.builder.node
+import ai.koog.agents.core.dsl.builder.strategy
 
-val source = node<String, Int> { input -> input.length }
-val target = node<Int, String> { input -> input.toString() }
+val strategy = strategy<String, String>("test") {
+    val source by node<String, Int> { input -> input.length }
+    val target by node<Int, String> { input -> input.toString() }
 
-fun test() {
+    edge(nodeStart forwardTo source)
     edge(source forwardTo target)
+    edge(target forwardTo nodeFinish)
 }

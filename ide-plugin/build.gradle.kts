@@ -6,8 +6,14 @@ plugins {
     id("org.jetbrains.changelog")
 }
 
+val koogClasspath by configurations.dependencyScope("koogClasspath")
+val koogResolvable by configurations.resolvable("koogResolvable") {
+    extendsFrom(koogClasspath)
+}
+
 dependencies {
     testImplementation("junit:junit:4.13.2")
+    koogClasspath("ai.koog:koog-agents:1.0.0")
 
     intellijPlatform {
         intellijIdea("2026.1.3")
@@ -20,4 +26,8 @@ dependencies {
 
 tasks.named("instrumentTestCode") {
     enabled = false
+}
+
+tasks.test {
+    systemProperty("koog.classpath", koogResolvable.asPath)
 }

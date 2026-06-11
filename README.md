@@ -84,6 +84,31 @@ edge(source forwardTo target transformed { it.toString() })
 
 - **`:compiler-plugin`** — the K2/FIR checker that detects and reports edge type mismatches.
 - **`:gradle-plugin`** — a Gradle plugin that applies the compiler plugin to any Kotlin project.
+- **`:ide-plugin`** — an IntelliJ IDEA plugin that surfaces the same diagnostic as a live inspection, without requiring a compilation step.
+
+## IDE Plugin
+
+The `ide-plugin` module provides an IntelliJ IDEA inspection that mirrors the compiler plugin check. Errors appear inline in the editor as you type, using the Kotlin Analysis API (K2-compatible, requires IntelliJ IDEA 2025.1 or later).
+
+### Build and install locally
+
+```bash
+cd ide-plugin
+./gradlew buildPlugin
+```
+
+The distributable is produced at `ide-plugin/build/distributions/koog-graph-checker-ide-*.zip`.
+
+Install it in IntelliJ IDEA via **Settings → Plugins → ⚙️ → Install Plugin from Disk…** and select the `.zip` file.
+
+### Run in a sandbox IDE
+
+To launch a sandboxed IntelliJ IDEA instance with the plugin pre-loaded:
+
+```bash
+cd ide-plugin
+./gradlew runIde
+```
 
 ## Tests
 

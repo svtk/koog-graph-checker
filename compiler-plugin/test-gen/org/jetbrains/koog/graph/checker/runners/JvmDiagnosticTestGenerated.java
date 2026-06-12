@@ -31,9 +31,33 @@ public class JvmDiagnosticTestGenerated extends AbstractJvmDiagnosticTest {
   }
 
   @Test
+  @TestMetadata("koogStrategyDeadEnd.kt")
+  public void testKoogStrategyDeadEnd() {
+    run("koogStrategyDeadEnd.kt");
+  }
+
+  @Test
+  @TestMetadata("koogStrategyDuplicateNames.kt")
+  public void testKoogStrategyDuplicateNames() {
+    run("koogStrategyDuplicateNames.kt");
+  }
+
+  @Test
   @TestMetadata("koogStrategyEdgeTypeMismatch.kt")
   public void testKoogStrategyEdgeTypeMismatch() {
     run("koogStrategyEdgeTypeMismatch.kt");
+  }
+
+  @Test
+  @TestMetadata("koogStrategyFinishOutgoing.kt")
+  public void testKoogStrategyFinishOutgoing() {
+    run("koogStrategyFinishOutgoing.kt");
+  }
+
+  @Test
+  @TestMetadata("koogStrategyFinishUnreachable.kt")
+  public void testKoogStrategyFinishUnreachable() {
+    run("koogStrategyFinishUnreachable.kt");
   }
 
   @Test
@@ -61,9 +85,21 @@ public class JvmDiagnosticTestGenerated extends AbstractJvmDiagnosticTest {
   }
 
   @Test
+  @TestMetadata("koogStrategyShadowedEdge.kt")
+  public void testKoogStrategyShadowedEdge() {
+    run("koogStrategyShadowedEdge.kt");
+  }
+
+  @Test
   @TestMetadata("koogStrategyTransformed.kt")
   public void testKoogStrategyTransformed() {
     run("koogStrategyTransformed.kt");
+  }
+
+  @Test
+  @TestMetadata("koogStrategyUnreachableNode.kt")
+  public void testKoogStrategyUnreachableNode() {
+    run("koogStrategyUnreachableNode.kt");
   }
 
   @Test

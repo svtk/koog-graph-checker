@@ -9,6 +9,6 @@ import org.jetbrains.kotlin.fir.expressions.FirFunctionCall
 class KoogFirCheckersExtension(session: FirSession) : FirAdditionalCheckersExtension(session) {
     override val expressionCheckers: ExpressionCheckers = object : ExpressionCheckers() {
         override val functionCallCheckers: Set<FirExpressionChecker<FirFunctionCall>> =
-            setOf(KoogEdgeTypeMismatchChecker)
+            setOf(KoogEdgeTypeMismatchChecker, KoogGraphStructureChecker)
     }
 }

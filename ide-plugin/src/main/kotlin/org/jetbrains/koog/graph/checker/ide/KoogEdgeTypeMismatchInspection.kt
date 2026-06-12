@@ -5,7 +5,9 @@ package org.jetbrains.koog.graph.checker.ide
 import com.intellij.codeInspection.LocalInspectionTool
 import com.intellij.codeInspection.ProblemHighlightType
 import com.intellij.codeInspection.ProblemsHolder
+import com.intellij.psi.PsiElement
 import com.intellij.psi.PsiElementVisitor
+import org.jetbrains.koog.graph.checker.common.buildEdgeTypeMismatchMessage
 import org.jetbrains.kotlin.analysis.api.KaExperimentalApi
 import org.jetbrains.kotlin.analysis.api.KaSession
 import org.jetbrains.kotlin.analysis.api.analyze
@@ -18,10 +20,12 @@ import org.jetbrains.kotlin.analysis.api.types.KaTypeParameterType
 import org.jetbrains.kotlin.name.ClassId
 import org.jetbrains.kotlin.name.FqName
 import org.jetbrains.kotlin.name.Name
+import org.jetbrains.kotlin.psi.KtBinaryExpression
 import org.jetbrains.kotlin.psi.KtCallExpression
 import org.jetbrains.kotlin.psi.KtDotQualifiedExpression
 import org.jetbrains.kotlin.psi.KtExpression
 import org.jetbrains.kotlin.psi.KtLambdaExpression
+import org.jetbrains.kotlin.psi.KtNameReferenceExpression
 import org.jetbrains.kotlin.psi.KtVisitorVoid
 import org.jetbrains.kotlin.types.Variance
 
@@ -36,6 +40,9 @@ import org.jetbrains.kotlin.types.Variance
  * If either slot holds an unresolved type parameter (can happen during error recovery), fallback
  * recovery mirrors the compiler plugin: lambda return type for IntermediateOutput, receiver's
  * type arg for OutgoingInput.
+ *
+ * The message names the source/target nodes, anchors the highlight on the operand at fault, and
+ * appends a remediation hint (see [buildEdgeTypeMismatchMessage]), matching the compiler plugin.
  */
 class KoogEdgeTypeMismatchInspection : LocalInspectionTool() {
 
@@ -57,19 +64,46 @@ class KoogEdgeTypeMismatchInspection : LocalInspectionTool() {
 
                     if (intermediateOutput.isSubtypeOf(outgoingInput)) return@analyze
 
-                    val message = "Invalid edge: the edge's output type " +
-                        "${intermediateOutput.render(KaTypeRendererForSource.WITH_SHORT_NAMES, Variance.INVARIANT)} " +
-                        "does not match the target node's input type " +
-                        "${outgoingInput.render(KaTypeRendererForSource.WITH_SHORT_NAMES, Variance.INVARIANT)}."
+                    val renderer = KaTypeRendererForSource.WITH_SHORT_NAMES
+                    val fromType = intermediateOutput.render(renderer, Variance.INVARIANT)
+                    val toType = outgoingInput.render(renderer, Variance.INVARIANT)
+                    val incomingType = typeArgAt(builderType, 0)?.render(renderer, Variance.INVARIANT)
 
-                    holder.registerProblem(
-                        expression.calleeExpression ?: expression,
-                        message,
-                        ProblemHighlightType.GENERIC_ERROR,
+                    val forwardTo = argument.findForwardToExpression()
+                    val isBare = (argument as? KtBinaryExpression)?.operationReference?.text == "forwardTo"
+
+                    val message = buildEdgeTypeMismatchMessage(
+                        sourceNode = (forwardTo?.left as? KtNameReferenceExpression)?.text,
+                        targetNode = (forwardTo?.right as? KtNameReferenceExpression)?.text,
+                        fromType = fromType,
+                        toType = toType,
+                        afterTransform = incomingType != null && incomingType != fromType,
                     )
+
+                    val anchor = anchor(argument, forwardTo, isBare) ?: expression.calleeExpression ?: expression
+
+                    holder.registerProblem(anchor, message, ProblemHighlightType.GENERIC_ERROR)
                 }
             }
         }
+
+    /**
+     * §1.2 — anchor the highlight on the operand at fault: the target node reference for a bare
+     * `forwardTo`, otherwise the outermost operator (`transformed`/`onCondition`/`onIsInstance`/…).
+     */
+    private fun anchor(argument: KtExpression, forwardTo: KtBinaryExpression?, isBare: Boolean): PsiElement? =
+        if (isBare) forwardTo?.right
+        else (argument as? KtBinaryExpression)?.operationReference
+
+    /** Descends the left operand chain to the innermost `forwardTo` infix call (`source forwardTo target`). */
+    private fun KtExpression.findForwardToExpression(): KtBinaryExpression? {
+        var current: KtExpression? = this
+        while (current is KtBinaryExpression) {
+            if (current.operationReference.text == "forwardTo") return current
+            current = current.left
+        }
+        return null
+    }
 
     // IntermediateOutput = type arg [1]. Fallback: lambda return type of the outermost transform.
     private fun KaSession.intermediateOutput(builderType: KaClassType, argument: KtExpression): KaType? =

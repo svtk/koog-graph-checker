@@ -8,6 +8,6 @@ val strategy = strategy<String, String>("test") {
     val target by node<String, String> { input -> input }
 
     edge(nodeStart forwardTo source)
-    <!NONE_APPLICABLE!>edge<!>(source forwardTo <!KOOG_EDGE_TYPE_MISMATCH!>target<!>)
+    <!NONE_APPLICABLE!>edge<!>(source forwardTo target <!KOOG_EDGE_TYPE_MISMATCH!>onCondition<!> { it > 0 })
     edge(target forwardTo nodeFinish)
 }

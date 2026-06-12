@@ -15,6 +15,9 @@ dependencies {
     testImplementation("junit:junit:4.13.2")
     koogClasspath("ai.koog:koog-agents:1.0.0")
 
+    // Shared error-message builder, so the compiler and IDE diagnostics stay byte-identical.
+    implementation(project(":common"))
+
     intellijPlatform {
         intellijIdea("2026.1.3")
         testFramework(TestFrameworkType.Platform)

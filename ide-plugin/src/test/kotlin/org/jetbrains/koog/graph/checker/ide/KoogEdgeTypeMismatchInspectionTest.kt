@@ -65,4 +65,14 @@ class KoogEdgeTypeMismatchInspectionTest : LightJavaCodeInsightFixtureTestCase()
         myFixture.configureByFile("koogStrategyOnConditionTransformed.kt")
         myFixture.checkHighlighting(false, false, false, true)
     }
+
+    fun testErrorNamesNodesInMessage() {
+        myFixture.configureByFile("koogStrategyNamedNodes.kt")
+        myFixture.checkHighlighting(false, false, false, true)
+    }
+
+    fun testErrorOnConditionOnlyMismatch() {
+        myFixture.configureByFile("koogStrategyOnCondition.kt")
+        myFixture.checkHighlighting(false, false, false, true)
+    }
 }

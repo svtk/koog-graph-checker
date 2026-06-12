@@ -27,6 +27,7 @@ dependencyResolutionManagement {
 
 rootProject.name = "koog-graph-checker"
 
+include("common")
 include("compiler-plugin")
 include("gradle-plugin")
 include("ide-plugin")

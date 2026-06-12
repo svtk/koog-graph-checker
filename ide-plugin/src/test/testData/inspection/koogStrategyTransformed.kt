@@ -6,6 +6,6 @@ val strategy = strategy<String, String>("test") {
     val target by node<String, String> { input -> input }
 
     edge(nodeStart forwardTo source)
-    <error descr="Invalid edge: the edge's output type Long does not match the target node's input type String.">edge</error>(source forwardTo target transformed { it.toLong() })
+    edge(source forwardTo target <error descr="Invalid edge from node 'source' to node 'target': the value type after the transform Long does not match the target node's input type String. Insert `transformed { }` to convert Long to String, or change the target node's input type.">transformed</error> { it.toLong() })
     edge(target forwardTo nodeFinish)
 }

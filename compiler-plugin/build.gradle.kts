@@ -35,6 +35,9 @@ dependencies {
     compileOnly(libs.kotlin.compiler)
     compileOnly(libs.koog.agents)
 
+    // Shared error-message builder, so the compiler and IDE diagnostics stay byte-identical.
+    implementation(project(":common"))
+
     testFixturesApi(libs.kotlin.test.junit5)
     testFixturesApi(libs.kotlin.test.framework)
     testFixturesApi(libs.kotlin.compiler)

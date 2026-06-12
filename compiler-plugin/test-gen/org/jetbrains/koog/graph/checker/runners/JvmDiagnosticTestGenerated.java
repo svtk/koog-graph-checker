@@ -37,6 +37,18 @@ public class JvmDiagnosticTestGenerated extends AbstractJvmDiagnosticTest {
   }
 
   @Test
+  @TestMetadata("koogStrategyNamedNodes.kt")
+  public void testKoogStrategyNamedNodes() {
+    run("koogStrategyNamedNodes.kt");
+  }
+
+  @Test
+  @TestMetadata("koogStrategyOnCondition.kt")
+  public void testKoogStrategyOnCondition() {
+    run("koogStrategyOnCondition.kt");
+  }
+
+  @Test
   @TestMetadata("koogStrategyOnConditionTransformed.kt")
   public void testKoogStrategyOnConditionTransformed() {
     run("koogStrategyOnConditionTransformed.kt");

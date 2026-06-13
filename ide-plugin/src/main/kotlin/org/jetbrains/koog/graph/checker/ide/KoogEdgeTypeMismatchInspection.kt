@@ -88,7 +88,7 @@ class KoogEdgeTypeMismatchInspection : LocalInspectionTool() {
         }
 
     /**
-     * §1.2 — anchor the highlight on the operand at fault: the target node reference for a bare
+     * Anchor the highlight on the operand at fault: the target node reference for a bare
      * `forwardTo`, otherwise the outermost operator (`transformed`/`onCondition`/`onIsInstance`/…).
      */
     private fun anchor(argument: KtExpression, forwardTo: KtBinaryExpression?, isBare: Boolean): PsiElement? =

@@ -24,5 +24,13 @@
             enabledByDefault="true"
             level="ERROR"
             implementationClass="org.jetbrains.koog.graph.checker.ide.KoogEdgeTypeMismatchInspection"/>
+        <localInspection
+            language="kotlin"
+            groupPath="Kotlin"
+            groupName="Koog"
+            displayName="Koog strategy graph structure"
+            enabledByDefault="true"
+            level="WARNING"
+            implementationClass="org.jetbrains.koog.graph.checker.ide.KoogGraphStructureInspection"/>
     </extensions>
 </idea-plugin>

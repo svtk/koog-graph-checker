@@ -18,14 +18,14 @@ import java.text.MessageFormat
  * `transformed { }` are quoted (`'{ }'`). The compiler renderer and `java.text.MessageFormat` (used
  * by [buildEdgeTypeMismatchMessage] for the IDE) apply the same un-escaping.
  *
- * Covers spec §1.1–1.5: names the nodes (§1.1), distinguishes a post-transform value type (§1.4),
- * appends an actionable hint (§1.3), and uses straight apostrophes (§1.5).
+ * The message names the edge's source and target nodes, distinguishes a post-transform value type
+ * from the bare source output, appends an actionable hint, and uses straight apostrophes.
  */
 const val EDGE_TYPE_MISMATCH_MESSAGE: String =
     "{0}: {1} {2} does not match the target node''s input type {3}. " +
         "Insert `transformed '{ }'` to convert {2} to {3}, or change the target node''s input type."
 
-/** §1.1 — names the edge's source and target nodes, or a type-only subject when a name is unavailable. */
+/** Names the edge's source and target nodes, or a type-only subject when a name is unavailable. */
 fun edgeMismatchSubject(sourceNode: String?, targetNode: String?): String =
     if (sourceNode != null && targetNode != null) {
         "Invalid edge from node '$sourceNode' to node '$targetNode'"
@@ -33,7 +33,7 @@ fun edgeMismatchSubject(sourceNode: String?, targetNode: String?): String =
         "Invalid edge"
     }
 
-/** §1.4 — phrases the offending value as a post-transform type or the bare source-node output. */
+/** Phrases the offending value as a post-transform type or the bare source-node output. */
 fun edgeMismatchOrigin(afterTransform: Boolean): String =
     if (afterTransform) "the value type after the transform" else "the source node's output type"
 

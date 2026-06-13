@@ -93,11 +93,11 @@ object KoogEdgeTypeMismatchChecker : FirExpressionChecker<FirFunctionCall>(MppCh
         )
     }
 
-    /** Whether an operator changed the value type (used only to choose the §1.4 wording). */
+    /** Whether an operator changed the value type (used only to choose the message wording). */
     private fun ConeKotlinType.changedTo(other: ConeKotlinType): Boolean = renderReadable() != other.renderReadable()
 
     /**
-     * §1.2 — anchor the highlight on the operand at fault: the target node reference for a bare
+     * Anchor the highlight on the operand at fault: the target node reference for a bare
      * `forwardTo`, otherwise the outermost operator (`transformed`/`onCondition`/`onIsInstance`/…).
      */
     private fun anchor(argument: FirExpression, forwardTo: FirFunctionCall?, isBare: Boolean): KtSourceElement? =

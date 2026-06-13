@@ -1,0 +1,37 @@
+<html>
+<body>
+<p>
+    Reports structural problems in the graph of a Koog <code>strategy { }</code> or <code>subgraph { }</code>
+    block, such as a finish node that can never be reached or a node that nothing routes into.
+</p>
+<p>
+    Several of these problems otherwise surface only at run time, when the strategy initializer throws an
+    <code>IllegalStateException</code> with no source location, while others are silent and simply make part of
+    the graph never execute. This inspection catches them while you edit, reported on the offending node or edge:
+</p>
+<pre><code>
+'nodeFinish' is not reachable from 'nodeStart'. The graph cannot terminate; add an edge that eventually reaches 'nodeFinish'.
+</code></pre>
+<!-- tooltip end -->
+<p>
+    Reported as errors (these crash at run time):
+</p>
+<ul>
+    <li>An outgoing edge from <code>nodeFinish</code> — the terminal node cannot have outgoing edges.</li>
+    <li><code>nodeFinish</code> is not reachable from <code>nodeStart</code>, so the graph can never terminate.</li>
+    <li>Two nodes in the same graph share a name.</li>
+</ul>
+<p>
+    Reported as warnings (legal Kotlin, but silently wrong):
+</p>
+<ul>
+    <li>A node that no path from <code>nodeStart</code> reaches, so it never executes.</li>
+    <li>A reachable, non-finish node with no outgoing edge, where execution stalls.</li>
+    <li>A conditional edge ordered after an unconditional edge from the same node, which makes it unreachable
+        because the unconditional edge always matches first.</li>
+</ul>
+<p>
+    Nested <code>subgraph { }</code> blocks are analyzed independently, each with its own start and finish node.
+</p>
+</body>
+</html>

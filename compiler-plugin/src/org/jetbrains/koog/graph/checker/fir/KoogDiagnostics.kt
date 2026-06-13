@@ -36,6 +36,11 @@ object KoogDiagnostics : KtDiagnosticsContainer() {
     val KOOG_SHADOWED_EDGE: KtDiagnosticFactory1<String> by warning1<KtElement, String>()
     val KOOG_DEAD_END_NODE: KtDiagnosticFactory1<String> by warning1<KtElement, String>()
 
+    // Edge-condition exhaustiveness (spec §2.7–§2.9). Both arrive fully formatted from `common`; both
+    // are warnings (a non-exhaustive fan-out is legal Kotlin that silently stalls only at runtime).
+    val KOOG_MISSING_EDGE_CASES: KtDiagnosticFactory1<String> by warning1<KtElement, String>()
+    val KOOG_ALL_CONDITIONAL_FANOUT: KtDiagnosticFactory1<String> by warning1<KtElement, String>()
+
     override fun getRendererFactory(): BaseDiagnosticRendererFactory = KoogDiagnosticsDefaultMessages
 }
 
@@ -56,5 +61,7 @@ object KoogDiagnosticsDefaultMessages : BaseDiagnosticRendererFactory() {
         map.put(KoogDiagnostics.KOOG_UNREACHABLE_NODE, "{0}", CommonRenderers.STRING)
         map.put(KoogDiagnostics.KOOG_SHADOWED_EDGE, "{0}", CommonRenderers.STRING)
         map.put(KoogDiagnostics.KOOG_DEAD_END_NODE, "{0}", CommonRenderers.STRING)
+        map.put(KoogDiagnostics.KOOG_MISSING_EDGE_CASES, "{0}", CommonRenderers.STRING)
+        map.put(KoogDiagnostics.KOOG_ALL_CONDITIONAL_FANOUT, "{0}", CommonRenderers.STRING)
     }
 }

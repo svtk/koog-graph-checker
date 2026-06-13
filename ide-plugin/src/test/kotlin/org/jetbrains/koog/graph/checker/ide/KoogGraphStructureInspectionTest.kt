@@ -70,4 +70,19 @@ class KoogGraphStructureInspectionTest : LightJavaCodeInsightFixtureTestCase() {
         myFixture.configureByFile("koogStrategyDeadEnd.kt")
         myFixture.checkHighlighting(true, false, false)
     }
+
+    fun testEnumMissingCase() {
+        myFixture.configureByFile("koogStrategyEnumMissingCase.kt")
+        myFixture.checkHighlighting(true, false, false)
+    }
+
+    fun testEnumExhaustive() {
+        myFixture.configureByFile("koogStrategyEnumExhaustive.kt")
+        myFixture.checkHighlighting(true, false, false)
+    }
+
+    fun testBooleanMissingCase() {
+        myFixture.configureByFile("koogStrategyBooleanMissingCase.kt")
+        myFixture.checkHighlighting(true, false, false)
+    }
 }

@@ -38,3 +38,21 @@ fun shadowedEdgeMessage(source: String): String =
 fun deadEndNodeMessage(node: String): String =
     "'$node' is reachable but has no outgoing edge; execution will stall here. " +
         "Add an edge from '$node' (e.g. to 'nodeFinish')."
+
+/**
+ * §2.8/§2.9 — an enumerable fan-out (enum/sealed/boolean/null) leaves some case unhandled. [missing]
+ * holds the human-readable labels of the uncovered cases (enum entry names, `is Subtype`, `false`,
+ * `null`). Reads like Kotlin's own non-exhaustive-`when` message ("add a branch for X").
+ */
+fun missingEdgeCasesMessage(node: String, domainDescription: String, missing: List<String>): String {
+    val cases = missing.joinToString(", ")
+    val plural = missing.size > 1
+    return "'$node' routes on $domainDescription but no edge handles: $cases. " +
+        "When '$node' produces ${if (plural) "one of them" else cases} no edge matches and the run stalls. " +
+        "Add an edge for ${if (plural) "each missing case" else "it"}, or an unconditional fallback edge from '$node'."
+}
+
+/** §2.7 — a fan-out whose outgoing edges are all conditional, with no unconditional fallback. */
+fun allConditionalFanoutMessage(node: String): String =
+    "'$node' has only conditional outgoing edges; an input matching none of the conditions will stall here. " +
+        "Consider an unconditional fallback edge from '$node'."

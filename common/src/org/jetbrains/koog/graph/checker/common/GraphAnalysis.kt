@@ -11,6 +11,10 @@ enum class GraphFindingKind {
     /** §2.4 */ UNREACHABLE_NODE,
     /** §2.5 */ SHADOWED_EDGE,
     /** §2.6 */ DEAD_END_NODE,
+    /** §2.8/§2.9 — an enumerable fan-out (enum/sealed/boolean/null) leaves some case unhandled. */
+    MISSING_EDGE_CASES,
+    /** §2.7 — a fan-out whose edges are all conditional with no fallback (opt-in; see [analyzeExhaustiveness]). */
+    ALL_CONDITIONAL_FANOUT,
 }
 
 /** A single structural problem: where to report ([anchor]), how severe, and the shared message text. */

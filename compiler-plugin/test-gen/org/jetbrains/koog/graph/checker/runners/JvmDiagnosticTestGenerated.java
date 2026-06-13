@@ -31,6 +31,12 @@ public class JvmDiagnosticTestGenerated extends AbstractJvmDiagnosticTest {
   }
 
   @Test
+  @TestMetadata("koogStrategyBooleanMissingCase.kt")
+  public void testKoogStrategyBooleanMissingCase() {
+    run("koogStrategyBooleanMissingCase.kt");
+  }
+
+  @Test
   @TestMetadata("koogStrategyDeadEnd.kt")
   public void testKoogStrategyDeadEnd() {
     run("koogStrategyDeadEnd.kt");
@@ -46,6 +52,18 @@ public class JvmDiagnosticTestGenerated extends AbstractJvmDiagnosticTest {
   @TestMetadata("koogStrategyEdgeTypeMismatch.kt")
   public void testKoogStrategyEdgeTypeMismatch() {
     run("koogStrategyEdgeTypeMismatch.kt");
+  }
+
+  @Test
+  @TestMetadata("koogStrategyEnumExhaustive.kt")
+  public void testKoogStrategyEnumExhaustive() {
+    run("koogStrategyEnumExhaustive.kt");
+  }
+
+  @Test
+  @TestMetadata("koogStrategyEnumMissingCase.kt")
+  public void testKoogStrategyEnumMissingCase() {
+    run("koogStrategyEnumMissingCase.kt");
   }
 
   @Test

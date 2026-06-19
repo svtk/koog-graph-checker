@@ -36,6 +36,8 @@ object KoogDiagnostics : KtDiagnosticsContainer() {
     val KOOG_UNREACHABLE_NODE: KtDiagnosticFactory1<String> by warning1<KtElement, String>()
     val KOOG_SHADOWED_EDGE: KtDiagnosticFactory1<String> by warning1<KtElement, String>()
     val KOOG_DEAD_END_NODE: KtDiagnosticFactory1<String> by warning1<KtElement, String>()
+    val KOOG_ALL_CONDITIONAL_NO_FALLBACK: KtDiagnosticFactory1<String> by warning1<KtElement, String>()
+    val KOOG_NON_EXHAUSTIVE_EDGE_CONDITIONS: KtDiagnosticFactory1<String> by warning1<KtElement, String>()
 
     override fun getRendererFactory(): BaseDiagnosticRendererFactory = KoogDiagnosticsDefaultMessages
 }
@@ -57,5 +59,7 @@ object KoogDiagnosticsDefaultMessages : BaseDiagnosticRendererFactory() {
         map.put(KoogDiagnostics.KOOG_UNREACHABLE_NODE, "{0}", CommonRenderers.STRING)
         map.put(KoogDiagnostics.KOOG_SHADOWED_EDGE, "{0}", CommonRenderers.STRING)
         map.put(KoogDiagnostics.KOOG_DEAD_END_NODE, "{0}", CommonRenderers.STRING)
+        map.put(KoogDiagnostics.KOOG_ALL_CONDITIONAL_NO_FALLBACK, "{0}", CommonRenderers.STRING)
+        map.put(KoogDiagnostics.KOOG_NON_EXHAUSTIVE_EDGE_CONDITIONS, "{0}", CommonRenderers.STRING)
     }
 }

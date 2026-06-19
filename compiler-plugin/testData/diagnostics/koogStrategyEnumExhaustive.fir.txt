@@ -1,0 +1,57 @@
+FILE: koogStrategyEnumExhaustive.kt
+    public final enum class Status : R|kotlin/Enum<Status>| {
+        private constructor(): R|Status| {
+            super<R|kotlin/Enum<Status>|>()
+        }
+
+        public final static enum entry APPROVED: R|Status|
+        public final static enum entry REJECTED: R|Status|
+        public final static fun values(): R|kotlin/Array<Status>| {
+        }
+
+        public final static fun valueOf(value: R|kotlin/String|): R|Status| {
+        }
+
+        public final static val entries: R|kotlin/enums/EnumEntries<Status>|
+            public static get(): R|kotlin/enums/EnumEntries<Status>|
+
+    }
+    public final val strategy: R|ai/koog/agents/core/agent/entity/AIAgentGraphStrategy<kotlin/String, kotlin/String>| = R|ai/koog/agents/core/dsl/builder/strategy|<R|kotlin/String|, R|kotlin/String|>(String(test), <L> = strategy@fun R|ai/koog/agents/core/dsl/builder/AIAgentGraphStrategyBuilder<kotlin/String, kotlin/String>|.<anonymous>(): R|kotlin/Unit| <inline=Inline, kind=UNKNOWN>  {
+        lval decide: R|ai/koog/agents/core/agent/entity/AIAgentNodeBase<kotlin/String, Status>|by R|ai/koog/agents/core/dsl/builder/node|<R|kotlin/String|, R|Status|>(<L> = node@fun R|ai/koog/agents/core/agent/context/AIAgentGraphContextBase|.<anonymous>(it: R|kotlin/String|): R|Status| <inline=NoInline>  {
+            ^ Q|Status|.R|/Status.APPROVED|
+        }
+        )
+            local get(): R|ai/koog/agents/core/agent/entity/AIAgentNodeBase<kotlin/String, Status>| {
+                ^ D|<local>/decide|.R|SubstitutionOverride<ai/koog/agents/core/dsl/builder/AIAgentNodeDelegate.getValue: R|ai/koog/agents/core/agent/entity/AIAgentNodeBase<kotlin/String, Status>|>|(Null(null), ::R|<local>/decide|)
+            }
+
+        lval yes: R|ai/koog/agents/core/agent/entity/AIAgentNodeBase<Status, kotlin/String>|by R|ai/koog/agents/core/dsl/builder/node|<R|Status|, R|kotlin/String|>(<L> = node@fun R|ai/koog/agents/core/agent/context/AIAgentGraphContextBase|.<anonymous>(it: R|Status|): R|kotlin/String| <inline=NoInline>  {
+            ^ String(approved)
+        }
+        )
+            local get(): R|ai/koog/agents/core/agent/entity/AIAgentNodeBase<Status, kotlin/String>| {
+                ^ D|<local>/yes|.R|SubstitutionOverride<ai/koog/agents/core/dsl/builder/AIAgentNodeDelegate.getValue: R|ai/koog/agents/core/agent/entity/AIAgentNodeBase<Status, kotlin/String>|>|(Null(null), ::R|<local>/yes|)
+            }
+
+        lval no: R|ai/koog/agents/core/agent/entity/AIAgentNodeBase<Status, kotlin/String>|by R|ai/koog/agents/core/dsl/builder/node|<R|Status|, R|kotlin/String|>(<L> = node@fun R|ai/koog/agents/core/agent/context/AIAgentGraphContextBase|.<anonymous>(it: R|Status|): R|kotlin/String| <inline=NoInline>  {
+            ^ String(rejected)
+        }
+        )
+            local get(): R|ai/koog/agents/core/agent/entity/AIAgentNodeBase<Status, kotlin/String>| {
+                ^ D|<local>/no|.R|SubstitutionOverride<ai/koog/agents/core/dsl/builder/AIAgentNodeDelegate.getValue: R|ai/koog/agents/core/agent/entity/AIAgentNodeBase<Status, kotlin/String>|>|(Null(null), ::R|<local>/no|)
+            }
+
+        this@R|special/anonymous|.R|SubstitutionOverride<ai/koog/agents/core/dsl/builder/AIAgentGraphStrategyBuilder.edge: R|kotlin/Unit|>|<R|kotlin/String|, R|kotlin/String|, R|kotlin/String|>(this@R|special/anonymous|.R|SubstitutionOverride<ai/koog/agents/core/dsl/builder/AIAgentGraphStrategyBuilder.nodeStart: R|ai/koog/agents/core/agent/entity/StartNode<kotlin/String>|>|.R|SubstitutionOverride<ai/koog/agents/core/agent/entity/StartNode.forwardTo: R|ai/koog/agents/core/dsl/builder/AIAgentEdgeBuilderIntermediate<kotlin/String, kotlin/String, OutgoingInput>|>|<R|kotlin/String|>(R|<local>/decide|))
+        this@R|special/anonymous|.R|SubstitutionOverride<ai/koog/agents/core/dsl/builder/AIAgentGraphStrategyBuilder.edge: R|kotlin/Unit|>|<R|Status|, R|Status|, R|Status|>(R|<local>/decide|.R|SubstitutionOverride<ai/koog/agents/core/agent/entity/AIAgentNodeBase.forwardTo: R|ai/koog/agents/core/dsl/builder/AIAgentEdgeBuilderIntermediate<Status, Status, OutgoingInput>|>|<R|Status|>(R|<local>/yes|).R|SubstitutionOverride<ai/koog/agents/core/dsl/builder/AIAgentEdgeBuilderIntermediate.onCondition: R|ai/koog/agents/core/dsl/builder/AIAgentEdgeBuilderIntermediate<Status, Status, Status>|>|(onCondition@fun R|ai/koog/agents/core/agent/context/AIAgentGraphContextBase|.<anonymous>(it: R|Status|): R|kotlin/Boolean| <inline=NoInline>  {
+            ^ ==(R|<local>/it|, Q|Status|.R|/Status.APPROVED|)
+        }
+        ))
+        this@R|special/anonymous|.R|SubstitutionOverride<ai/koog/agents/core/dsl/builder/AIAgentGraphStrategyBuilder.edge: R|kotlin/Unit|>|<R|Status|, R|Status|, R|Status|>(R|<local>/decide|.R|SubstitutionOverride<ai/koog/agents/core/agent/entity/AIAgentNodeBase.forwardTo: R|ai/koog/agents/core/dsl/builder/AIAgentEdgeBuilderIntermediate<Status, Status, OutgoingInput>|>|<R|Status|>(R|<local>/no|).R|SubstitutionOverride<ai/koog/agents/core/dsl/builder/AIAgentEdgeBuilderIntermediate.onCondition: R|ai/koog/agents/core/dsl/builder/AIAgentEdgeBuilderIntermediate<Status, Status, Status>|>|(onCondition@fun R|ai/koog/agents/core/agent/context/AIAgentGraphContextBase|.<anonymous>(it: R|Status|): R|kotlin/Boolean| <inline=NoInline>  {
+            ^ ==(R|<local>/it|, Q|Status|.R|/Status.REJECTED|)
+        }
+        ))
+        this@R|special/anonymous|.R|SubstitutionOverride<ai/koog/agents/core/dsl/builder/AIAgentGraphStrategyBuilder.edge: R|kotlin/Unit|>|<R|kotlin/String|, R|kotlin/String|, R|kotlin/String|>(R|<local>/yes|.R|SubstitutionOverride<ai/koog/agents/core/agent/entity/AIAgentNodeBase.forwardTo: R|ai/koog/agents/core/dsl/builder/AIAgentEdgeBuilderIntermediate<kotlin/String, kotlin/String, OutgoingInput>|>|<R|kotlin/String|>(this@R|special/anonymous|.R|SubstitutionOverride<ai/koog/agents/core/dsl/builder/AIAgentGraphStrategyBuilder.nodeFinish: R|ai/koog/agents/core/agent/entity/FinishNode<kotlin/String>|>|))
+        this@R|special/anonymous|.R|SubstitutionOverride<ai/koog/agents/core/dsl/builder/AIAgentGraphStrategyBuilder.edge: R|kotlin/Unit|>|<R|kotlin/String|, R|kotlin/String|, R|kotlin/String|>(R|<local>/no|.R|SubstitutionOverride<ai/koog/agents/core/agent/entity/AIAgentNodeBase.forwardTo: R|ai/koog/agents/core/dsl/builder/AIAgentEdgeBuilderIntermediate<kotlin/String, kotlin/String, OutgoingInput>|>|<R|kotlin/String|>(this@R|special/anonymous|.R|SubstitutionOverride<ai/koog/agents/core/dsl/builder/AIAgentGraphStrategyBuilder.nodeFinish: R|ai/koog/agents/core/agent/entity/FinishNode<kotlin/String>|>|))
+    }
+    )
+        public get(): R|ai/koog/agents/core/agent/entity/AIAgentGraphStrategy<kotlin/String, kotlin/String>|

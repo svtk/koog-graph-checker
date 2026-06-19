@@ -1,7 +1,7 @@
 package org.jetbrains.koog.graph.checker.common
 
 /** Severity of a structural finding, mapped by each layer to its own diagnostic level. */
-enum class GraphFindingSeverity { ERROR, WARNING }
+enum class GraphFindingSeverity { ERROR, WARNING, WEAK_WARNING }
 
 /** Which structural rule produced a finding — lets each layer pick the matching diagnostic factory. */
 enum class GraphFindingKind {
@@ -11,6 +11,8 @@ enum class GraphFindingKind {
     /** A declared node that no path from start reaches. */ UNREACHABLE_NODE,
     /** A conditional edge ordered after an unconditional one from the same node. */ SHADOWED_EDGE,
     /** A reachable, non-finish node with no outgoing edge. */ DEAD_END_NODE,
+    /** All outgoing edges from a node are conditional with no catch-all fallback. */ ALL_CONDITIONAL_NO_FALLBACK,
+    /** An enumerable domain (enum/sealed/boolean) is not fully covered by edge conditions. */ NON_EXHAUSTIVE_EDGE_CONDITIONS,
 }
 
 /** A single structural problem: where to report ([anchor]), how severe, and the shared message text. */
@@ -47,6 +49,7 @@ fun <A> analyzeGraph(model: GraphModel<A>): List<GraphFinding<A>> {
         findings += finishUnreachable(model, reachable)
         findings += unreachableNodes(model, reachable)
         findings += deadEndNodes(model, reachable)
+        findings += exhaustivenessFindings(model, reachable)
     }
 
     return findings
@@ -164,4 +167,83 @@ private fun <A> deadEndNodes(model: GraphModel<A>, reachable: Set<String>): List
                 deadEndNodeMessage(node.referenceName),
             )
         }
+}
+
+/**
+ * Edge-condition exhaustiveness check.
+ *
+ * For each reachable node with outgoing edges, checks whether the edge conditions fully cover the
+ * node's emitted domain. Implements three tiers:
+ *
+ * 1. **Enumerable domain, all pure discriminators** → report missing cases (`NON_EXHAUSTIVE_EDGE_CONDITIONS`).
+ * 2. **Enumerable domain, some opaque conditions** → suppress (can't prove a gap).
+ * 3. **Non-enumerable / unknown domain, no catch-all** → weak `ALL_CONDITIONAL_NO_FALLBACK` nudge.
+ *
+ * A [EdgeCondition.CatchAll] edge (bare `forwardTo` or `onCondition { true }`) immediately exhausts
+ * the domain → no finding. An [EdgeCondition.Opaque] edge forces bail-out for enumerable domains
+ * (since it might cover unknown cases), but does NOT suppress the weak nudge for non-enumerable ones.
+ */
+private fun <A> exhaustivenessFindings(model: GraphModel<A>, reachable: Set<String>): List<GraphFinding<A>> {
+    val findings = mutableListOf<GraphFinding<A>>()
+    val edgesBySource = model.edges.groupBy { it.sourceName }
+
+    for (node in model.nodes) {
+        if (node.kind == NodeKind.FINISH) continue
+        if (node.referenceName !in reachable) continue
+        val anchor = node.declarationAnchor ?: continue
+
+        val edges = edgesBySource[node.referenceName] ?: continue
+        if (edges.isEmpty()) continue
+
+        if (edges.any { it.condition is EdgeCondition.CatchAll }) continue
+
+        val domain = node.emittedDomain
+        val hasOpaque = edges.any { it.condition is EdgeCondition.Opaque }
+
+        if (domain == null || domain is NodeDomain.NonEnumerable || hasOpaque) {
+            if (domain == null || domain is NodeDomain.NonEnumerable) {
+                findings += GraphFinding(
+                    GraphFindingKind.ALL_CONDITIONAL_NO_FALLBACK,
+                    GraphFindingSeverity.WEAK_WARNING,
+                    anchor,
+                    allConditionalNoFallbackMessage(node.referenceName),
+                )
+            }
+            continue
+        }
+
+        val covered = edges.mapNotNull { edge ->
+            when (val cond = edge.condition) {
+                is EdgeCondition.ValueMatch -> cond.valueName
+                is EdgeCondition.TypeCheck -> cond.typeName
+                else -> null
+            }
+        }.toSet()
+
+        val allCases = when (domain) {
+            is NodeDomain.EnumDomain -> domain.entries
+            is NodeDomain.SealedDomain -> domain.subtypes
+            is NodeDomain.BooleanDomain -> listOf("true", "false")
+            is NodeDomain.NonEnumerable -> continue
+        }
+
+        val missing = allCases.filter { it !in covered }
+
+        if (missing.isNotEmpty()) {
+            val domainKind = when (domain) {
+                is NodeDomain.EnumDomain -> "enum ${domain.className}"
+                is NodeDomain.SealedDomain -> "sealed type ${domain.className}"
+                is NodeDomain.BooleanDomain -> "Boolean"
+                is NodeDomain.NonEnumerable -> continue
+            }
+            findings += GraphFinding(
+                GraphFindingKind.NON_EXHAUSTIVE_EDGE_CONDITIONS,
+                GraphFindingSeverity.WARNING,
+                anchor,
+                nonExhaustiveEdgeConditionsMessage(node.referenceName, domainKind, missing),
+            )
+        }
+    }
+
+    return findings
 }

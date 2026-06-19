@@ -38,3 +38,16 @@ fun shadowedEdgeMessage(source: String): String =
 fun deadEndNodeMessage(node: String): String =
     "'$node' is reachable but has no outgoing edge; execution will stall here. " +
         "Add an edge from '$node' (e.g. to 'nodeFinish')."
+
+/** All outgoing edges from a node are conditional with no unconditional fallback. */
+fun allConditionalNoFallbackMessage(node: String): String =
+    "'$node' has only conditional outgoing edges; inputs matching no condition will stall. " +
+        "Consider adding an unconditional fallback edge from '$node'."
+
+/** An enumerable domain (enum/sealed/boolean) is not fully covered by edge conditions. */
+fun nonExhaustiveEdgeConditionsMessage(node: String, domainKind: String, missing: List<String>): String {
+    val missingText = missing.joinToString(", ")
+    return "'$node' routes on $domainKind but no edge handles: $missingText. " +
+        "Add an edge for the missing case${if (missing.size > 1) "s" else ""}, " +
+        "or an unconditional fallback edge from '$node'."
+}

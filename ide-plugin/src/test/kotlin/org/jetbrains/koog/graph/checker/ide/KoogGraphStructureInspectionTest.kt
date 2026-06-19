@@ -79,4 +79,34 @@ class KoogGraphStructureInspectionTest : LightJavaCodeInsightFixtureTestCase() {
         myFixture.configureByFile("koogStrategyDeadEnd.kt")
         myFixture.checkHighlighting(true, false, false)
     }
+
+    fun testAllConditionalNoFallback() {
+        myFixture.configureByFile("koogStrategyAllConditional.kt")
+        myFixture.checkHighlighting(true, false, true)
+    }
+
+    fun testEnumNonExhaustive() {
+        myFixture.configureByFile("koogStrategyEnumNonExhaustive.kt")
+        myFixture.checkHighlighting(true, false, false)
+    }
+
+    fun testEnumExhaustive() {
+        myFixture.configureByFile("koogStrategyEnumExhaustive.kt")
+        myFixture.checkHighlighting(true, false, false)
+    }
+
+    fun testBooleanNonExhaustive() {
+        myFixture.configureByFile("koogStrategyBooleanNonExhaustive.kt")
+        myFixture.checkHighlighting(true, false, false)
+    }
+
+    fun testOpaqueCondition() {
+        myFixture.configureByFile("koogStrategyOpaqueCondition.kt")
+        myFixture.checkHighlighting(true, false, false)
+    }
+
+    fun testEnumWithFallback() {
+        myFixture.configureByFile("koogStrategyEnumWithFallback.kt")
+        myFixture.checkHighlighting(true, false, false)
+    }
 }

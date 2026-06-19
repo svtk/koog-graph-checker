@@ -31,6 +31,18 @@ public class JvmDiagnosticTestGenerated extends AbstractJvmDiagnosticTest {
   }
 
   @Test
+  @TestMetadata("koogStrategyAllConditional.kt")
+  public void testKoogStrategyAllConditional() {
+    run("koogStrategyAllConditional.kt");
+  }
+
+  @Test
+  @TestMetadata("koogStrategyBooleanNonExhaustive.kt")
+  public void testKoogStrategyBooleanNonExhaustive() {
+    run("koogStrategyBooleanNonExhaustive.kt");
+  }
+
+  @Test
   @TestMetadata("koogStrategyDeadEnd.kt")
   public void testKoogStrategyDeadEnd() {
     run("koogStrategyDeadEnd.kt");
@@ -46,6 +58,24 @@ public class JvmDiagnosticTestGenerated extends AbstractJvmDiagnosticTest {
   @TestMetadata("koogStrategyEdgeTypeMismatch.kt")
   public void testKoogStrategyEdgeTypeMismatch() {
     run("koogStrategyEdgeTypeMismatch.kt");
+  }
+
+  @Test
+  @TestMetadata("koogStrategyEnumExhaustive.kt")
+  public void testKoogStrategyEnumExhaustive() {
+    run("koogStrategyEnumExhaustive.kt");
+  }
+
+  @Test
+  @TestMetadata("koogStrategyEnumNonExhaustive.kt")
+  public void testKoogStrategyEnumNonExhaustive() {
+    run("koogStrategyEnumNonExhaustive.kt");
+  }
+
+  @Test
+  @TestMetadata("koogStrategyEnumWithFallback.kt")
+  public void testKoogStrategyEnumWithFallback() {
+    run("koogStrategyEnumWithFallback.kt");
   }
 
   @Test
@@ -82,6 +112,12 @@ public class JvmDiagnosticTestGenerated extends AbstractJvmDiagnosticTest {
   @TestMetadata("koogStrategyOnIsInstance.kt")
   public void testKoogStrategyOnIsInstance() {
     run("koogStrategyOnIsInstance.kt");
+  }
+
+  @Test
+  @TestMetadata("koogStrategyOpaqueCondition.kt")
+  public void testKoogStrategyOpaqueCondition() {
+    run("koogStrategyOpaqueCondition.kt");
   }
 
   @Test

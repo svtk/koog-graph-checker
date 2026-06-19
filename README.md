@@ -4,23 +4,13 @@ A Kotlin (K2/FIR) compiler plugin that emits clear, domain-specific diagnostics 
 
 ## Problem
 
-When two nodes in a Koog strategy graph are connected by an edge whose types don't line up, the Kotlin compiler reports a generic type-mismatch involving deeply nested generic signatures such as:
-
-```
-AIAgentNodeBase<*, SomeLongType> vs AIAgentNodeBase<AnotherLongType, *>
-```
-
-These messages are hard to read and don't explain the problem in terms the user thinks about — *node A's output type doesn't match node B's input type*.
+Koog strategy graphs are easy to wire incorrectly. Type mismatches between nodes produce Kotlin compiler errors with deeply nested generic signatures that don't explain the problem in domain terms. Structural mistakes — a missing edge to `nodeFinish`, an unreachable node, non-exhaustive routing — compile without errors but crash or stall at runtime.
 
 ## Solution
 
-This plugin adds a focused, readable diagnostic alongside the existing compiler error:
+This plugin adds focused, readable diagnostics for common graph-wiring mistakes — from type mismatches on individual edges to structural problems like unreachable nodes, dead ends, and non-exhaustive routing. Many of these errors would otherwise surface only at runtime as `IllegalStateException` during strategy initialization, or as silent stalls during execution.
 
-```
-Invalid edge: the edge's output type Int does not match the target node's input type String.
-```
-
-The user gets both the standard Kotlin failure and the domain-level explanation.
+The user gets domain-level explanations that name the nodes involved and suggest fixes, alongside the standard Kotlin errors.
 
 ## How Koog graphs are defined
 
@@ -43,48 +33,59 @@ val strategy = strategy<String, String>("name") {
 
 ## What the plugin checks
 
-The plugin validates the single rule Koog's own `edge(...)` function enforces: **the value type reaching the target node must be a subtype of the target node's input type**. This covers:
+The plugin performs two categories of validation: **per-edge type checks** and **structural graph checks**. Many of these catch errors that Koog only reports at runtime (as `IllegalStateException` during strategy initialization), moving them to compile/edit time.
 
-- A direct `source forwardTo target` edge with incompatible types.
-- An edge that applies one or more transforms (e.g. `transformed`, `onIsInstance`, `asUserMessage`, or any user-defined extension) where the final transformed type still doesn't match the target's input.
-- Chains that mix type-neutral operators with type-changing ones in any order.
+### Edge type mismatch
 
-The check is driven entirely by the resolved types of the edge builder expression, so it works automatically for any operator — built-in or custom — without naming them explicitly.
-
-### Example — type mismatch without a transform
+Validates that **the value type reaching the target node is a subtype of the target node's input type**. This covers direct `forwardTo` edges, edges with transforms (`transformed`, `onIsInstance`, etc.), and chains mixing type-neutral and type-changing operators. The diagnostic names both nodes and explains whether the mismatch comes from the source node's output or a transform result.
 
 ```kotlin
-val source by node<String, Int> { it.length }   // output: Int
-val target by node<String, String> { it }        // input:  String
+val source by node<String, Int> { it.length }
+val target by node<String, String> { it }
 
 edge(source forwardTo target)
-// KOOG_EDGE_TYPE_MISMATCH: Invalid edge: the edge's output type Int
-//   does not match the target node's input type String.
-```
-
-### Example — type mismatch after a transform
-
-```kotlin
-val source by node<String, Int> { it.length }   // output: Int
-val target by node<String, String> { it }        // input:  String
+// Invalid edge from 'source' to 'target': the source node's output type Int
+//   does not match 'target' input type String.
 
 edge(source forwardTo target transformed { it.toLong() })
-// KOOG_EDGE_TYPE_MISMATCH: Invalid edge: the edge's output type Long
-//   does not match the target node's input type String.
+// Invalid edge from 'source' to 'target': the value type after the transform Long
+//   does not match 'target' input type String.
 ```
 
-### Example — valid edge (no diagnostic)
+### Structural graph checks
+
+These checks build a model of the entire `strategy { }` or `subgraph { }` block — collecting node declarations, `edge(...)` calls, and `then` operators — and validate structural invariants.
+
+| Check | Severity | What it catches |
+|-------|----------|-----------------|
+| **Outgoing edge from `nodeFinish`** | Error | `edge(nodeFinish forwardTo ...)` — the finish node cannot have outgoing edges |
+| **Finish node unreachable** | Error | No path of edges leads from `nodeStart` to `nodeFinish`; the graph can never terminate |
+| **Duplicate node names** | Error | Two nodes share the same name (explicit or property-derived) within a strategy/subgraph |
+| **Unreachable node** | Warning | A declared node has no path from `nodeStart` and will never execute |
+| **Dead-end node** | Warning | A reachable non-finish node has no outgoing edges; execution will stall |
+| **Shadowed edge** | Warning | A conditional edge is declared after an unconditional edge from the same node and can never be taken |
+| **Non-exhaustive edge conditions** | Warning | A node routes on an enum, sealed class, or boolean, but not all cases are covered and there is no fallback edge |
+| **All-conditional, no fallback** | Weak warning | All outgoing edges from a node are conditional with no catch-all; inputs matching no condition will stall |
+
+### Exhaustiveness checks
+
+When a node's output type is an **enum**, **sealed class/interface**, or **boolean**, the plugin checks that the outgoing edges cover all cases — the same idea as Kotlin's exhaustive `when`. It recognizes `onCondition { it == Entry }` for value matching and `onIsInstance(Type::class)` for type matching, and reports the specific missing cases. An unconditional fallback edge or `onCondition { true }` suppresses the check. Edges with opaque conditions (arbitrary lambdas) also suppress the check to avoid false alarms.
 
 ```kotlin
-edge(source forwardTo target transformed { it.toString() })
-// Fine: transformed output String matches target input String.
+enum class Route { SEARCH, ANSWER, ESCALATE }
+
+val classify by node<String, Route> { ... }
+edge(classify forwardTo searchNode onCondition { it == Route.SEARCH })
+edge(classify forwardTo answerNode onCondition { it == Route.ANSWER })
+// 'classify' routes on enum Route but no edge handles: ESCALATE.
 ```
 
 ## Project structure
 
-- **`:compiler-plugin`** — the K2/FIR checker that detects and reports edge type mismatches.
+- **`:common`** — shared graph model, analysis logic, and diagnostic messages used by both the compiler and IDE plugins.
+- **`:compiler-plugin`** — the K2/FIR checkers that detect and report graph issues during compilation.
 - **`:gradle-plugin`** — a Gradle plugin that applies the compiler plugin to any Kotlin project.
-- **`:ide-plugin`** — an IntelliJ IDEA plugin that surfaces the same diagnostic as a live inspection, without requiring a compilation step.
+- **`:ide-plugin`** — an IntelliJ IDEA plugin that surfaces the same diagnostics as live inspections, without requiring a compilation step.
 
 ## IDE Plugin
 

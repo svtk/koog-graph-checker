@@ -52,16 +52,24 @@ import org.jetbrains.kotlin.name.Name
  */
 object KoogEdgeTypeMismatchChecker : FirExpressionChecker<FirFunctionCall>(MppCheckerKind.Common) {
     private val EDGE = Name.identifier("edge")
+    private val THEN = Name.identifier("then")
     private val FORWARD_TO = Name.identifier("forwardTo")
     private val EDGE_BUILDER_CLASS_ID = ClassId(
         FqName("ai.koog.agents.core.dsl.builder"),
         Name.identifier("AIAgentEdgeBuilderIntermediate"),
     )
+    private val NODE_ENTITY_PACKAGE = FqName("ai.koog.agents.core.agent.entity")
 
     context(context: CheckerContext, reporter: DiagnosticReporter)
     override fun check(expression: FirFunctionCall) {
-        if (expression.calleeReference.name != EDGE) return
+        when (expression.calleeReference.name) {
+            EDGE -> checkEdge(expression)
+            THEN -> checkThen(expression)
+        }
+    }
 
+    context(context: CheckerContext, reporter: DiagnosticReporter)
+    private fun checkEdge(expression: FirFunctionCall) {
         val argument = expression.arguments.firstOrNull() ?: return
         val builderType = argument.resolvedType
         if (builderType.classId != EDGE_BUILDER_CLASS_ID) return
@@ -89,6 +97,33 @@ object KoogEdgeTypeMismatchChecker : FirExpressionChecker<FirFunctionCall>(MppCh
             edgeMismatchOrigin(afterTransform = incoming != null && incoming.changedTo(intermediateOutput)),
             intermediateOutput,
             outgoingInput,
+            context,
+        )
+    }
+
+    /** Checks a `source then target` infix call for a type mismatch between the source output and target input. */
+    context(context: CheckerContext, reporter: DiagnosticReporter)
+    private fun checkThen(expression: FirFunctionCall) {
+        val receiver = expression.explicitReceiver ?: return
+        val argument = expression.arguments.firstOrNull() ?: return
+
+        val sourceOutput = receiver.nodeOutputType() ?: return
+        val targetInput = argument.nodeInputType() ?: return
+
+        if (sourceOutput.isSubtypeOf(targetInput, context.session)) return
+
+        val anchor = argument.source ?: expression.calleeReference.source ?: expression.source
+
+        reporter.reportOn(
+            anchor,
+            KoogDiagnostics.KOOG_EDGE_TYPE_MISMATCH,
+            edgeMismatchSubject(
+                sourceNode = receiver.simpleNameOrNull(),
+                targetNode = argument.simpleNameOrNull(),
+            ),
+            edgeMismatchOrigin(afterTransform = false),
+            sourceOutput,
+            targetInput,
             context,
         )
     }
@@ -149,4 +184,24 @@ object KoogEdgeTypeMismatchChecker : FirExpressionChecker<FirFunctionCall>(MppCh
         arguments.firstNotNullOfOrNull {
             (it as? FirAnonymousFunctionExpression)?.anonymousFunction?.returnTypeRef?.coneTypeOrNull
         }.concreteOrNull()
+
+    /**
+     * Extracts the output type from a Koog node expression.
+     *
+     * `AIAgentNodeBase<Input, Output>` and `AIAgentNode<Input, Output>` have two type args (output at index 1).
+     * `StartNode<T>` and `FinishNode<T>` extend `AIAgentNode<T, T>` with one type arg (output = input at index 0).
+     */
+    private fun FirExpression.nodeOutputType(): ConeKotlinType? {
+        val type = resolvedType
+        if (type.classId?.packageFqName != NODE_ENTITY_PACKAGE) return null
+        val args = type.typeArguments
+        val outputIndex = if (args.size >= 2) 1 else 0
+        return args.getOrNull(outputIndex)?.type.concreteOrNull()
+    }
+
+    private fun FirExpression.nodeInputType(): ConeKotlinType? {
+        val type = resolvedType
+        if (type.classId?.packageFqName != NODE_ENTITY_PACKAGE) return null
+        return type.typeArguments.getOrNull(0)?.type.concreteOrNull()
+    }
 }

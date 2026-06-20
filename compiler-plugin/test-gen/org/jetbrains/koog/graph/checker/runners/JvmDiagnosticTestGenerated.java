@@ -127,6 +127,12 @@ public class JvmDiagnosticTestGenerated extends AbstractJvmDiagnosticTest {
   }
 
   @Test
+  @TestMetadata("koogStrategyThenEdgeTypeMismatch.kt")
+  public void testKoogStrategyThenEdgeTypeMismatch() {
+    run("koogStrategyThenEdgeTypeMismatch.kt");
+  }
+
+  @Test
   @TestMetadata("koogStrategyTransformed.kt")
   public void testKoogStrategyTransformed() {
     run("koogStrategyTransformed.kt");

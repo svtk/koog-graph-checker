@@ -341,4 +341,5 @@ object KoogGraphStructureChecker : FirExpressionChecker<FirFunctionCall>(MppChec
 
     private fun FirFunctionCall.firstStringLiteralArg(): String? =
         arguments.firstNotNullOfOrNull { (it as? FirLiteralExpression)?.value as? String }
+
 }

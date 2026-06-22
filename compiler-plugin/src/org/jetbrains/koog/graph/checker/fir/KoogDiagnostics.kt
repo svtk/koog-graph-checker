@@ -5,6 +5,7 @@ import org.jetbrains.kotlin.diagnostics.KtDiagnosticFactory1
 import org.jetbrains.kotlin.diagnostics.KtDiagnosticFactory4
 import org.jetbrains.kotlin.diagnostics.KtDiagnosticFactoryToRendererMap
 import org.jetbrains.kotlin.diagnostics.KtDiagnosticsContainer
+import org.jetbrains.kotlin.diagnostics.SourceElementPositioningStrategies
 import org.jetbrains.kotlin.diagnostics.error1
 import org.jetbrains.kotlin.diagnostics.error4
 import org.jetbrains.kotlin.diagnostics.warning1
@@ -27,17 +28,17 @@ object KoogDiagnostics : KtDiagnosticsContainer() {
 
     // Structural graph checks. The full message is built once in the shared `common` module
     // ([org.jetbrains.koog.graph.checker.common.analyzeGraph]) and passed through as `{0}`, so the
-    // compiler and IDE text stay byte-identical. Finish-outgoing-edge, finish-unreachable, and
-    // duplicate-name are errors (Koog throws at runtime); the rest are warnings (legal Kotlin,
-    // silently wrong).
+    // compiler and IDE text stay byte-identical. Finish-outgoing-edge and duplicate-name are errors
+    // (Koog throws at runtime); the rest are warnings (legal Kotlin, silently wrong at runtime or
+    // likely in-progress code).
     val KOOG_FINISH_OUTGOING_EDGE: KtDiagnosticFactory1<String> by error1<KtElement, String>()
-    val KOOG_FINISH_UNREACHABLE: KtDiagnosticFactory1<String> by error1<KtElement, String>()
-    val KOOG_DUPLICATE_NODE_NAME: KtDiagnosticFactory1<String> by error1<KtElement, String>()
-    val KOOG_UNREACHABLE_NODE: KtDiagnosticFactory1<String> by warning1<KtElement, String>()
+    val KOOG_FINISH_UNREACHABLE: KtDiagnosticFactory1<String> by warning1<KtElement, String>()
+    val KOOG_DUPLICATE_NODE_NAME: KtDiagnosticFactory1<String> by error1<KtElement, String>(SourceElementPositioningStrategies.NAME_IDENTIFIER)
+    val KOOG_UNREACHABLE_NODE: KtDiagnosticFactory1<String> by warning1<KtElement, String>(SourceElementPositioningStrategies.NAME_IDENTIFIER)
     val KOOG_SHADOWED_EDGE: KtDiagnosticFactory1<String> by warning1<KtElement, String>()
-    val KOOG_DEAD_END_NODE: KtDiagnosticFactory1<String> by warning1<KtElement, String>()
-    val KOOG_ALL_CONDITIONAL_NO_FALLBACK: KtDiagnosticFactory1<String> by warning1<KtElement, String>()
-    val KOOG_NON_EXHAUSTIVE_EDGE_CONDITIONS: KtDiagnosticFactory1<String> by warning1<KtElement, String>()
+    val KOOG_DEAD_END_NODE: KtDiagnosticFactory1<String> by warning1<KtElement, String>(SourceElementPositioningStrategies.NAME_IDENTIFIER)
+    val KOOG_ALL_CONDITIONAL_NO_FALLBACK: KtDiagnosticFactory1<String> by warning1<KtElement, String>(SourceElementPositioningStrategies.NAME_IDENTIFIER)
+    val KOOG_NON_EXHAUSTIVE_EDGE_CONDITIONS: KtDiagnosticFactory1<String> by warning1<KtElement, String>(SourceElementPositioningStrategies.NAME_IDENTIFIER)
 
     override fun getRendererFactory(): BaseDiagnosticRendererFactory = KoogDiagnosticsDefaultMessages
 }

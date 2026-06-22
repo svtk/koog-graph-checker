@@ -131,7 +131,7 @@ private fun <A> finishUnreachable(model: GraphModel<A>, reachable: Set<String>):
         listOf(
             GraphFinding(
                 GraphFindingKind.FINISH_UNREACHABLE,
-                GraphFindingSeverity.ERROR,
+                GraphFindingSeverity.WARNING,
                 model.scopeAnchor,
                 finishUnreachableMessage(model.scopeName),
             )

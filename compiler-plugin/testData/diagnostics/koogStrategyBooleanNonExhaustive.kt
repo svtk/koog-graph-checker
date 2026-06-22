@@ -5,7 +5,7 @@ import ai.koog.agents.core.dsl.builder.strategy
 
 // 'decide' routes on Boolean but no edge handles: false.
 val strategy = strategy<String, String>("test") {
-    <!KOOG_NON_EXHAUSTIVE_EDGE_CONDITIONS!>val decide by node<String, Boolean> { it.isNotEmpty() }<!>
+    val <!KOOG_NON_EXHAUSTIVE_EDGE_CONDITIONS!>decide<!> by node<String, Boolean> { it.isNotEmpty() }
     val yes by node<Boolean, String> { "yes" }
 
     edge(nodeStart forwardTo decide)

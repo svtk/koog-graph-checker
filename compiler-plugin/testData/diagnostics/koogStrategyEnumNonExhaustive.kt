@@ -7,7 +7,7 @@ enum class Route { SEARCH, ANSWER, ESCALATE }
 
 // 'classify' routes on enum Route but no edge handles: ESCALATE.
 val strategy = strategy<String, String>("test") {
-    <!KOOG_NON_EXHAUSTIVE_EDGE_CONDITIONS!>val classify by node<String, Route> { Route.SEARCH }<!>
+    val <!KOOG_NON_EXHAUSTIVE_EDGE_CONDITIONS!>classify<!> by node<String, Route> { Route.SEARCH }
     val searchNode by node<Route, String> { it.name }
     val answerNode by node<Route, String> { it.name }
 

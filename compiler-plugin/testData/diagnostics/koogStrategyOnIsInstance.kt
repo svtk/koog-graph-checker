@@ -5,7 +5,7 @@ import ai.koog.agents.core.dsl.builder.strategy
 import ai.koog.agents.core.dsl.extension.onIsInstance
 
 val strategy = strategy<String, String>("test") {
-    <!KOOG_ALL_CONDITIONAL_NO_FALLBACK!>val source by node<String, Any> { input -> input }<!>
+    val <!KOOG_ALL_CONDITIONAL_NO_FALLBACK!>source<!> by node<String, Any> { input -> input }
     val target by node<String, String> { input -> input }
 
     edge(nodeStart forwardTo source)
